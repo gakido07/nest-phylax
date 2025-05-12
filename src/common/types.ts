@@ -1,4 +1,4 @@
-import { ClaimsDto } from '../jwt-auth';
+import { ClaimsDto } from '../jwt-auth/';
 
 export type Request = {
   headers: {
@@ -7,11 +7,23 @@ export type Request = {
   claims: ClaimsDto;
 };
 
-export class Jwt extends ClaimsDto {
+export class Jwt {
   /**
    * The JWT value
    */
   value: string;
+  /**
+   * The subject of the JWT
+   */
+  sub: string | number;
+  /**
+   * The JWT ID
+   */
+  jti?: string;
+  /**
+   * The role of the JWT
+   */
+  role: string;
 }
 
 export class JwtDatabaseModel {
