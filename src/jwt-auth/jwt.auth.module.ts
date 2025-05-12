@@ -2,7 +2,12 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { TokenConfig } from './types';
 import { RefreshTokenController, PasswordLoginController } from './controllers';
 import { JwtAuthService } from './services/jwt.auth.service';
-import { USER_REPOSITORY_TOKEN, UserRepository } from '../common';
+import {
+  PASSWORD_ENCODER_TOKEN,
+  PasswordEncoder,
+  USER_REPOSITORY_TOKEN,
+  UserRepository,
+} from '../common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards';
 
@@ -11,6 +16,7 @@ export interface JwtAuthModuleOptions {
   refreshTokenConfig?: TokenConfig;
   userRepository: UserRepository;
   disableControllers?: boolean;
+  passwordEncoder: PasswordEncoder;
 }
 
 export const JWT_AUTH_MODULE_OPTIONS_TOKEN = 'JWT_AUTH_MODULE_OPTIONS_TOKEN';
@@ -45,6 +51,10 @@ export class JwtAuthModule {
         {
           provide: APP_GUARD,
           useClass: JwtAuthGuard,
+        },
+        {
+          provide: PASSWORD_ENCODER_TOKEN,
+          useValue: options.passwordEncoder,
         },
       ],
       controllers,
