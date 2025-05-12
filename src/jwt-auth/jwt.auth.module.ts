@@ -15,8 +15,8 @@ export interface JwtAuthModuleOptions {
   accessTokenConfig: TokenConfig;
   refreshTokenConfig?: TokenConfig;
   userRepository: UserRepository;
-  disableControllers?: boolean;
   passwordEncoder: PasswordEncoder;
+  disableControllers?: boolean;
 }
 
 export const JWT_AUTH_MODULE_OPTIONS_TOKEN = 'JWT_AUTH_MODULE_OPTIONS_TOKEN';

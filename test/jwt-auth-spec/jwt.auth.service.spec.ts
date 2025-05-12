@@ -25,6 +25,11 @@ describe('JwtAuthService', () => {
         expiresIn: '1d',
       },
       userRepository: USER_REPOSITORY_MOCK,
+      passwordEncoder: {
+        encode: () => Promise.resolve('encoded'),
+        compare: (password, encodedPassword) =>
+          Promise.resolve(password === encodedPassword),
+      },
     }
   );
 
