@@ -1,3 +1,4 @@
+import { Type } from '@nestjs/common';
 import { ClaimsDto } from '../jwt-auth/';
 
 export type Request = {
@@ -76,4 +77,21 @@ export interface PasswordEncoder {
    * @returns True if the password is correct, false otherwise
    */
   compare(password: string, encodedPassword: string): Promise<boolean>;
+}
+
+export type NestPhylaxProvider<T = any> =
+  | NestPhylaxClassProvider<T>
+  | NestPhylaxValueProvider<T>
+  | NestPhylaxFactoryProvider<T>;
+
+export interface NestPhylaxClassProvider<T = any> {
+  useClass: Type<T>;
+}
+
+export interface NestPhylaxValueProvider<T = any> {
+  useValue: T;
+}
+
+export interface NestPhylaxFactoryProvider<T = any> {
+  useFactory: (...args: any[]) => T | Promise<T>;
 }

@@ -1,29 +1,26 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import {
   Jwt,
+  JWT_AUTH_MODULE_OPTIONS_TOKEN,
   PASSWORD_ENCODER_TOKEN,
   PasswordEncoder,
-  RefreshTokenRecord,
   USER_REPOSITORY_TOKEN,
   UserRepository,
 } from '../../common';
 import { PasswordLoginArgs } from './types';
 import { JwtUtil } from '../jwt.util';
-import {
-  JWT_AUTH_MODULE_OPTIONS_TOKEN,
-  JwtAuthModuleOptions,
-} from '../jwt.auth.module';
+import { JwtGenerationOptions } from '../types';
 import { AUTHENTICATION_FAILED_ERROR_MESSAGE } from '../jwt.auth.constants';
 
 @Injectable()
 export class JwtAuthService {
   constructor(
+    @Inject(JWT_AUTH_MODULE_OPTIONS_TOKEN)
+    private readonly options: JwtGenerationOptions,
     @Inject(USER_REPOSITORY_TOKEN)
     private readonly userRepository: UserRepository,
     @Inject(PASSWORD_ENCODER_TOKEN)
-    private readonly passwordEncoder: PasswordEncoder,
-    @Inject(JWT_AUTH_MODULE_OPTIONS_TOKEN)
-    private readonly options: JwtAuthModuleOptions
+    private readonly passwordEncoder: PasswordEncoder
   ) {}
 
   async passwordLogin({ email, password, config }: PasswordLoginArgs): Promise<{
@@ -71,6 +68,7 @@ export class JwtAuthService {
       };
       await this.userRepository.saveRefreshToken(refreshToken, user.id);
     }
+
     return {
       accessToken: {
         value: jwtUtil.generateToken({

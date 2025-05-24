@@ -6,12 +6,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '../../common/constants';
 import {
-  ClaimsDto,
+  IS_PUBLIC_KEY,
   JWT_AUTH_MODULE_OPTIONS_TOKEN,
-  JwtAuthModuleOptions,
-} from '..';
+} from '../../common/constants';
+import { ClaimsDto, JwtGenerationOptions } from '..';
 import { JwtUtil } from '../jwt.util';
 import { Request } from '../../common';
 
@@ -19,7 +18,8 @@ import { Request } from '../../common';
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
     private reflector: Reflector,
-    @Inject(JWT_AUTH_MODULE_OPTIONS_TOKEN) private options: JwtAuthModuleOptions
+    @Inject(JWT_AUTH_MODULE_OPTIONS_TOKEN)
+    private options: JwtGenerationOptions
   ) {
     super();
   }

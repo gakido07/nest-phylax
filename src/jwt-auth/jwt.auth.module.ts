@@ -1,34 +1,24 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { TokenConfig } from './types';
+import { DynamicModule, Module, Type } from '@nestjs/common';
+import { JwtAuthModuleOptions, JwtGenerationOptions } from './types';
 import { RefreshTokenController, PasswordLoginController } from './controllers';
 import { JwtAuthService } from './services/jwt.auth.service';
 import {
+  JWT_AUTH_MODULE_OPTIONS_TOKEN,
+  JWT_GENERATION_OPTIONS_TOKEN,
   PASSWORD_ENCODER_TOKEN,
-  PasswordEncoder,
   USER_REPOSITORY_TOKEN,
-  UserRepository,
 } from '../common';
-import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards';
 
-export interface JwtAuthModuleOptions {
-  accessTokenConfig: TokenConfig;
-  refreshTokenConfig?: TokenConfig;
-  userRepository: UserRepository;
-  passwordEncoder: PasswordEncoder;
-  disableControllers?: boolean;
-}
-
-export const JWT_AUTH_MODULE_OPTIONS_TOKEN = 'JWT_AUTH_MODULE_OPTIONS_TOKEN';
-
-@Module({
-  providers: [JwtAuthService],
-  exports: [JwtAuthService],
-  controllers: [RefreshTokenController, PasswordLoginController],
-})
+@Module({})
 export class JwtAuthModule {
-  static forRoot(options: JwtAuthModuleOptions): DynamicModule {
-    let controllers: any[] = [];
+  static forRoot(
+    options: JwtAuthModuleOptions & JwtGenerationOptions
+  ): DynamicModule {
+    if (!options.accessTokenConfig) {
+      throw new Error('accessTokenConfig is required');
+    }
+    let controllers: Type<any>[] = [];
     if (!options.disableControllers) {
       if (options.refreshTokenConfig) {
         controllers = [RefreshTokenController, PasswordLoginController];
@@ -41,23 +31,47 @@ export class JwtAuthModule {
       providers: [
         {
           provide: JWT_AUTH_MODULE_OPTIONS_TOKEN,
-          useValue: options,
+          useValue: {
+            disableControllers: options?.disableControllers,
+            accessTokenConfig: options.accessTokenConfig,
+            refreshTokenConfig: options?.refreshTokenConfig,
+          },
         },
-        JwtAuthService,
+        {
+          provide: JWT_GENERATION_OPTIONS_TOKEN,
+          useValue: {
+            accessTokenConfig: options.accessTokenConfig,
+            refreshTokenConfig: options?.refreshTokenConfig,
+          },
+        },
         {
           provide: USER_REPOSITORY_TOKEN,
-          useValue: options.userRepository,
-        },
-        {
-          provide: APP_GUARD,
-          useClass: JwtAuthGuard,
+          ...options.userRepositoryProvider,
         },
         {
           provide: PASSWORD_ENCODER_TOKEN,
-          useValue: options.passwordEncoder,
+          ...options.passwordEncoderProvider,
         },
+        JwtAuthGuard,
+        JwtAuthService,
       ],
       controllers,
+      exports: [
+        JwtAuthService,
+        JwtAuthGuard,
+        {
+          provide: JWT_AUTH_MODULE_OPTIONS_TOKEN,
+          useValue: options,
+        },
+        {
+          provide: PASSWORD_ENCODER_TOKEN,
+          useValue: options.passwordEncoderProvider,
+        },
+        {
+          provide: USER_REPOSITORY_TOKEN,
+          useValue: options.userRepositoryProvider,
+        },
+      ],
     };
   }
 }

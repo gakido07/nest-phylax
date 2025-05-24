@@ -1,5 +1,5 @@
 import { IS_PUBLIC_KEY } from '../src/common/constants';
-import { Claims, HasRole, Public } from '../src/decorators';
+import { HasRole, Public } from '../src/decorators';
 
 describe('@Public', () => {
   class Test {

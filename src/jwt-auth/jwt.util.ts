@@ -32,7 +32,7 @@ export class JwtUtil {
       secretKey || process.env.JWT_SECRET_KEY,
       {
         ...signOptions,
-        expiresIn: '1h',
+        expiresIn: signOptions?.expiresIn || '1h',
       }
     );
   }

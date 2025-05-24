@@ -9,12 +9,6 @@ import {
 
 describe('JwtAuthService', () => {
   let service: JwtAuthService = new JwtAuthService(
-    USER_REPOSITORY_MOCK,
-    {
-      encode: () => Promise.resolve('encoded'),
-      compare: (password, encodedPassword) =>
-        Promise.resolve(password === encodedPassword),
-    },
     {
       accessTokenConfig: {
         secretKey: 'secret',
@@ -24,12 +18,12 @@ describe('JwtAuthService', () => {
         secretKey: 'secret',
         expiresIn: '1d',
       },
-      userRepository: USER_REPOSITORY_MOCK,
-      passwordEncoder: {
-        encode: () => Promise.resolve('encoded'),
-        compare: (password, encodedPassword) =>
-          Promise.resolve(password === encodedPassword),
-      },
+    },
+    USER_REPOSITORY_MOCK,
+    {
+      encode: () => Promise.resolve('encoded'),
+      compare: (password, encodedPassword) =>
+        Promise.resolve(password === encodedPassword),
     }
   );
 
