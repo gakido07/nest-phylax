@@ -421,7 +421,7 @@ class JwtUtil {
 }
 ```
 
-## Dependencies
+## Required Dependencies
 
 - @nestjs/common
 - @nestjs/core
