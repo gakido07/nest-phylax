@@ -218,19 +218,49 @@ export class UserRepository implements NpUserRepository {
 }
 ```
 
-Import `JwtAuthModule` into the root `AppModule` and use the `forRoot()` method to configure it:
+### Password Encoder
+
+The password encoder is used to encode and decode passwords. It must implement the `PasswordEncoder` interface. Here are examples for different password encoder implementations:
+
+#### Basic Implementation
+
+```typescript
+import { PasswordEncoder } from 'nest-phylax';
+
+export class PasswordEncoder implements PasswordEncoder {
+  encode(password: string): Promise<string> {
+    /**
+     * Logic to encode the password and return a hash
+     */
+  }
+  compare(password: string, hash: string): Promise<boolean> {
+    /**
+     * Logic to compare the password with the hash and return a boolean
+     */
+  }
+}
+```
+
+Import the `JwtAuthModule` into the root `AppModule` and use the `forRoot()` method to configure it:
 
 ```typescript
 import { Module } from '@nestjs/common';
 import { JwtAuthModule } from 'nest-phylax';
+import { UserRepository } from './user.repository';
+import { PasswordEncoder } from './password.encoder';
 
 @Module({
   imports: [
     JwtAuthModule.forRoot({
-      secretKey: '{YOUR_SECRET_KEY}',
       accessTokenConfig: {
         secretKey: '{YOUR_SECRET_KEY}',
         expiresIn: '1h',
+      },
+      userRepositoryProvider: {
+        useClass: UserRepository,
+      },
+      passwordEncoderProvider: {
+        useClass: PasswordEncoder,
       },
     }),
   ],
@@ -245,25 +275,17 @@ The `forRoot()` method accepts the following options:
 ```typescript
 interface JwtAuthModuleOptions {
   /**
-   * The secret key for the JWT token
-   */
-  secretKey: string;
-  /**
    * The configuration for the access token
    */
   accessTokenConfig: TokenConfig;
   /**
-   * The configuration for the refresh token
+   * The provider for the user repository
    */
-  refreshTokenConfig?: TokenConfig;
+  userRepositoryProvider: Provider;
   /**
-   * The repository for the user
+   * The provider for the password encoder
    */
-  userRepository: UserRepository;
-  /**
-   * Whether to disable the controllers. This is useful if you want to use custom * controllers / routes for login, refresh token, etc.
-   */
-  disableControllers?: boolean;
+  passwordEncoderProvider: Provider;
 }
 ```
 
@@ -296,6 +318,8 @@ String values can be in the following formats:
 - `1w`
 - `1m`
 - `1y`
+
+etc.
 
 ## Security Decorators
 

@@ -2,8 +2,10 @@ import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { JwtAuthService } from '../services/jwt.auth.service';
 import { PasswordLoginDto } from '../types';
 import { decode } from 'jsonwebtoken';
+import { Public } from '../../decorators';
 
 @Controller('/password-login')
+@Public()
 export class PasswordLoginController {
   constructor(private readonly jwtAuthService: JwtAuthService) {}
 
@@ -41,6 +43,7 @@ function validatePasswordLoginDto(dto: PasswordLoginDto) {
 }
 
 @Controller('/refresh-token')
+@Public()
 export class RefreshTokenController {
   constructor(private readonly jwtAuthService: JwtAuthService) {}
 

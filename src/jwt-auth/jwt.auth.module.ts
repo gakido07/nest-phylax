@@ -8,7 +8,6 @@ import {
   PASSWORD_ENCODER_TOKEN,
   USER_REPOSITORY_TOKEN,
 } from '../common';
-import { JwtAuthGuard } from './guards';
 
 @Module({})
 export class JwtAuthModule {
@@ -52,13 +51,11 @@ export class JwtAuthModule {
           provide: PASSWORD_ENCODER_TOKEN,
           ...options.passwordEncoderProvider,
         },
-        JwtAuthGuard,
         JwtAuthService,
       ],
       controllers,
       exports: [
         JwtAuthService,
-        JwtAuthGuard,
         {
           provide: JWT_AUTH_MODULE_OPTIONS_TOKEN,
           useValue: options,
